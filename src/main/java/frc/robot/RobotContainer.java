@@ -5,8 +5,11 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.setAngel;
+import frc.robot.subsystems.Drivebase;
 import frc.robot.subsystems.swerve;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -26,16 +29,33 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final XboxController mProgrammingController = new XboxController(
     0);
-    swerve s = new swerve(14, 6, 10);
+    swerve backLeft = new swerve(15, 7, 11);
+    swerve backRight = new swerve(16, 8, 12);
+    swerve FrontLeft = new swerve(14, 6, 10 );
+    swerve FrontRight = new swerve(17, 9, 13);
+    Drivebase s = new Drivebase(backLeft, backRight, FrontLeft, FrontRight);
     double angle = 0.0;
+   
+    private final Joystick joystick = new Joystick(0);
+
+    private final int yTranslationAxis = XboxController.Axis.kLeftY.value;  //  Gets how much the left joystick is pushed in the y-axis.
+    private final int xTranslationAxis = XboxController.Axis.kLeftX.value;  //  Gets how much the left joystick is pushed in the x-axis.
+    private final int turnAxis = XboxController.Axis.kRightX.value; //  Gets how much the right joystick is pushed in the x-axis.
+    //  Or something like that.
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    Trigger mProgrammingRB = new Trigger(() -> mProgrammingController.getRightBumper());
-    mProgrammingRB.whileTrue(new InstantCommand(() -> s.setSpeed(1.0)));
-    Trigger mProgrammingLB = new Trigger(() -> mProgrammingController.getLeftBumper());
-    mProgrammingLB.whileTrue(new setAngel(s, angle));
-    Trigger mProgrammingA = new Trigger(() -> mProgrammingController.getAButton());
-    mProgrammingA.whileTrue(new setAngel(s, 90));
+    // Trigger mProgrammingRB = new Trigger(() -> mProgrammingController.getRightBumper());
+    // mProgrammingRB.whileTrue(new InstantCommand(() -> s.setSpeed(1.0)));
+    // Trigger mProgrammingLB = new Trigger(() -> mProgrammingController.getLeftBumper());
+    // mProgrammingLB.whileTrue(new setAngel(s, angle));
+    // Trigger mProgrammingA = new Trigger(() -> mProgrammingController.getAButton());
+    // mProgrammingA.whileTrue(new setAngel(s, 90));
+    // mProgrammingController.getLeftX();
+    // mProgrammingController.getLeftY();
+
+    s.setDefaultCommand(new TeleopSwerve(s, ()->  mProgrammingController.getLeftX(), ()-> mProgrammingController.getLeftY()));
+
     // Configure the trigger bindings
     configureBindings();
   }
@@ -54,6 +74,7 @@ public class RobotContainer {
     
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+
   }
 
   /**

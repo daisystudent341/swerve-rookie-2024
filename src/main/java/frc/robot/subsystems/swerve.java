@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class swerve extends SubsystemBase 
 {
@@ -26,22 +29,32 @@ public class swerve extends SubsystemBase
     whatisyourssn = new WPI_TalonFX(kevinGKindaSucks,"CANivore");
     encoder = new CANCoder(port2, "CANivore"); 
   }
-  public Double Angel () {
+  public Double Angel () 
+  {
     return encoder.getAbsolutePosition();
   }
-  public void setSpeed(double speed) {
+  //actually sets speed in m/s
+  // our max robot speed is 5 m/s (: so divinde bye five
+  public void setVelocity(double speed)
+  {
+    whatisyourssn.set(TalonFXControlMode.Velocity, speed/5 * 2000.0 * 2048.0 /600.0);
+  }
+  public void setSpeed(double speed) 
+  {
     whatisyourssn.set(TalonFXControlMode.PercentOutput, speed);
-    
   }
-  public void setTurnSpeedy (double turnspeedy) { 
-kevinLalsokindasucks.set(TalonFXControlMode.PercentOutput, turnspeedy);
-   
+  public void setTurnSpeedy (double turnspeedy) 
+  { 
+    kevinLalsokindasucks.set(TalonFXControlMode.PercentOutput, turnspeedy);
   }
+  //radians please! :) 
   public void setAngle(double targetAngel)
   {
-    
+    kevinLalsokindasucks.set(TalonFXControlMode.Position, targetAngel / (2*Math.PI / (6.75 * 2048)));
   }
-
+public SwerveModulePosition getPosition() {
+  return new SwerveModulePosition (whatisyourssn.getSelectedSensorPosition() * ((Units.inchesToMeters(4.00)*Math.PI) / (6.75 * 2048)), new Rotation2d( encoder.getAbsolutePosition()));
+}
 
   @Override
   public void periodic() 
